@@ -5,6 +5,7 @@ import LoginForm from './LoginForm'
 import Message from './Message'
 import ArticleForm from './ArticleForm'
 import Spinner from './Spinner'
+import { axiosWithAuth } from '../axios'
 
 import axios from 'axios'
 
@@ -18,7 +19,6 @@ export default function App() {
   const [currentArticleId, setCurrentArticleId] = useState()
   const [spinnerOn, setSpinnerOn] = useState(false)
 
-  // ✨ Research `useNavigate` in React Router v.6
   const navigate = useNavigate()
   const redirectToLogin = () => navigate('/')
   const redirectToArticles = () => navigate('/articles')
@@ -49,6 +49,20 @@ export default function App() {
   }
 
   const getArticles = () => {
+    setMessage('');
+    setSpinnerOn(true);
+    axiosWithAuth().get('http://localhost:9000/api/articles')
+      .then (res => {
+        console.log(res)
+        setMessage(res.data.message);
+        setArticles(res.data.articles);
+        setSpinnerOn(false)
+      })
+      .catch (error => {
+        console.log(error)
+        error.status === 401? redirectToLogin() : {};
+        setSpinnerOn(false)
+      })
     // ✨ implement
     // We should flush the message state, turn on the spinner
     // and launch an authenticated request to the proper endpoint.
@@ -92,7 +106,7 @@ export default function App() {
           <Route path="articles" element={
             <>
               <ArticleForm />
-              <Articles />
+              <Articles getArticles={getArticles} articles={articles}/>
             </>
           } />
         </Routes>

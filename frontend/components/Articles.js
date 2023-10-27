@@ -3,18 +3,28 @@ import { Navigate } from 'react-router-dom'
 import PT from 'prop-types'
 
 export default function Articles(props) {
-  const {getArticles, articles} = props
+  const {getArticles, articles, setCurrentArticleId, deleteArticle} = props
 
-  // ✨ implement conditional logic: if no token exists
-  // we should render a Navigate to login screen (React Router v.6)
+  if (!localStorage.getItem('token')) {
+    return <Navigate to={'/'} />
+  }
 
   useEffect(() => {
     getArticles();
   }, [])
 
+
+
+  const handleEditClick = (id) => {
+    setCurrentArticleId(id)
+  };
+
+  const handleDeleteClick = (id) => {
+    deleteArticle(id);
+  };
+
   return (
     // ✨ fix the JSX: replace `Function.prototype` with actual functions
-    // and use the articles prop to generate articles
     <div className="articles">
       <h2>Articles</h2>
       {
@@ -29,8 +39,8 @@ export default function Articles(props) {
                   <p>Topic: {art.topic}</p>
                 </div>
                 <div>
-                  <button disabled={true} onClick={Function.prototype}>Edit</button>
-                  <button disabled={true} onClick={Function.prototype}>Delete</button>
+                  <button disabled={false} onClick={() => handleEditClick(art.article_id)}>Edit</button>
+                  <button disabled={false} onClick={() => handleDeleteClick(art.article_id)}>Delete</button>
                 </div>
               </div>
             )

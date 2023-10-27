@@ -6,6 +6,8 @@ import Message from './Message'
 import ArticleForm from './ArticleForm'
 import Spinner from './Spinner'
 
+import axios from 'axios'
+
 const articlesUrl = 'http://localhost:9000/api/articles'
 const loginUrl = 'http://localhost:9000/api/login'
 
@@ -29,7 +31,21 @@ export default function App() {
     // using the helper above.
   }
 
-  const login = ({ username, password }) => {
+  const login = (username, password) => {
+    const payload = {username, password};
+    setMessage('');
+    setSpinnerOn(true);
+    axios.post('http://localhost:9000/api/login' ,payload)
+      .then (res => {
+        console.log(res);
+        localStorage.setItem('token', res.token)
+        setMessage(res.message);
+        setSpinnerOn(false)
+        redirectToArticles();
+      })
+      .catch(err => {
+        console.log(err)
+      })
     // ✨ implement
     // We should flush the message state, turn on the spinner
     // and launch a request to the proper endpoint.
